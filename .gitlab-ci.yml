@@ -1,0 +1,20 @@
+image: docker
+
+variables:
+  IMAGE: mainmethod/dependency-check
+  DEPENDENCY_CHECK_VERSION: 5.3.2
+
+stages:
+  - build-image
+
+build-image:
+  only:
+    - master
+  stage: build-image
+  script:
+    - docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
+    - docker build -t ${IMAGE} -t ${IMAGE}:{DEPENDENCY_CHECK_VERSION} .
+    - docker push
+    - docker logout
+  retry:
+    max: 2
