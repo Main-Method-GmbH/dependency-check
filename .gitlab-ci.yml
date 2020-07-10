@@ -14,7 +14,7 @@ build-image:
   script:
     - docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
     - docker build -t ${IMAGE} -t ${IMAGE}:${DEPENDENCY_CHECK_VERSION} .
-    - docker push
+    - docker push ${IMAGE} && docker push ${IMAGE}:${DEPENDENCY_CHECK_VERSION}
     - docker logout
   retry:
     max: 2
