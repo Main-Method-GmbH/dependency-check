@@ -40,4 +40,5 @@ VOLUME ["/input", "/output"]
 ENTRYPOINT ["./dependency-check/bin/dependency-check.sh"]
 CMD ["--scan=/input","--format=ALL", "--out=/output", "-n", "--data=/home/dependency-check/data", "--disableAssembly"]
 
-COPY --from=base /home/${USER} /home/${USER}
+COPY --from=base /home/${USER}/dependency-check /home/${USER}/dependency-check
+COPY --from=base /home/${USER}/data /home/${USER}/data
