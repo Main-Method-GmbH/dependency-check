@@ -25,6 +25,8 @@ RUN unzip ${FILE} && \
 
 # Update dependency check database
 RUN ./dependency-check/bin/dependency-check.sh --updateonly --data=${HOME}/data
+ARG RANDOM
+RUN ./dependency-check/bin/dependency-check.sh --updateonly --data=${HOME}/data
 
 FROM openjdk:8-jre-slim as release
 
