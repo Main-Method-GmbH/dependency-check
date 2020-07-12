@@ -1,11 +1,6 @@
-FROM openjdk:8-jre-slim
+FROM openjdk:8-jre-slim as base
 
-LABEL vendor="Main Method GmbH"
-LABEL name="mainmethod/dependency-check"
-
-MAINTAINER Maik Herrmann <maik.herrmann@main-method.com>
-
-ENV DEPENDENCY_CHECK_VERSION 5.3.2
+ARG DEPENDENCY_CHECK_VERSION
 ENV DOWNLOAD_URL=https://dl.bintray.com/jeremy-long/owasp
 ENV FILE="dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip"
 ENV USER=dependency-check
@@ -28,11 +23,21 @@ RUN gpg --verify "${FILE}.asc"
 RUN unzip ${FILE} && \
     rm ${FILE}
 
-RUN ls -l
 # Update dependency check database
 RUN ./dependency-check/bin/dependency-check.sh --updateonly --data=${HOME}/data
 
-VOLUME ["/input", "/output"]
+FROM openjdk:8-jre-slim as release
 
+LABEL vendor="Main Method GmbH"
+LABEL name="mainmethod/dependency-check"
+MAINTAINER Maik Herrmann <maik.herrmann@main-method.com>
+
+ENV USER=dependency-check
+RUN useradd -ms /bin/bash ${USER}
+USER ${USER}
+WORKDIR /home/${USER}
+VOLUME ["/input", "/output"]
 ENTRYPOINT ["./dependency-check/bin/dependency-check.sh"]
 CMD ["--scan=/input","--format=ALL", "--out=/output", "-n", "--data=/home/dependency-check/data", "--disableAssembly"]
+
+COPY --from=base /home/${USER} /home/${USER}
